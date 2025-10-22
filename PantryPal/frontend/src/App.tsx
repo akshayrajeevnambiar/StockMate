@@ -5,6 +5,8 @@ import DashboardPage from "./pages/DashboardPage";
 import ItemsPage from "./pages/ItemsPage";
 import ItemFormPage from "./pages/ItemFormPage";
 import CountsPage from "./pages/CountsPage";
+import CountFormPage from "./pages/CountFormPage";
+import CountDetailPage from "./pages/CountDetailPage";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { authService } from "./services/auth";
@@ -38,6 +40,9 @@ function App() {
             <Route path="items/new" element={<ItemFormPage />} />
             <Route path="items/:id/edit" element={<ItemFormPage />} />
             <Route path="counts" element={<CountsPage />} />
+            <Route path="counts/new" element={<CountFormPage />} />
+            <Route path="counts/:id" element={<CountDetailPage />} />
+            <Route path="counts/:id/edit" element={<CountFormPage />} />
           </Route>
 
           <Route

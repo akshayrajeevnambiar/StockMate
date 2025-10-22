@@ -49,6 +49,11 @@ class Item(Base):
         return db.get(cls, item_id)
 
     @classmethod
+    def get_by_id_sync(cls, db, item_id: UUID) -> Optional["Item"]:
+        """Get an item by ID (sync version - alias for compatibility)."""
+        return db.get(cls, item_id)
+
+    @classmethod
     def get_low_stock(cls, db) -> list["Item"]:
         """Get all items that are below their par level."""
         stmt = select(cls).where(cls.current_quantity < cls.par_level)

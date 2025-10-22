@@ -17,6 +17,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@tailwindcss/vite": "^4.1.15",
     "@tanstack/react-query": "^5.90.5",
     "axios": "^1.12.2",
     "react": "^19.1.1",

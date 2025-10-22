@@ -1,7 +1,7 @@
 from datetime import datetime, date
 from typing import Optional, List
 from sqlalchemy import String, Text, ForeignKey, DateTime, select, Date, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, Session
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID, uuid4
 from enum import Enum
@@ -41,6 +41,11 @@ class Count(Base):
         return await db.get(cls, count_id)
 
     @classmethod
+    def get_by_id_sync(cls, db: Session, count_id: UUID) -> Optional["Count"]:
+        """Get a count by ID (sync version)."""
+        return db.get(cls, count_id)
+
+    @classmethod
     async def get_user_active_count(cls, db: AsyncSession, user_id: UUID, count_date: date) -> Optional["Count"]:
         """Get a user's active count for a specific date."""
         stmt = select(cls).where(
@@ -49,6 +54,17 @@ class Count(Base):
             (cls.status == CountStatus.DRAFT)
         )
         result = await db.execute(stmt)
+        return result.scalar_one_or_none()
+
+    @classmethod
+    def get_user_active_count_sync(cls, db: Session, user_id: UUID, count_date: date) -> Optional["Count"]:
+        """Get a user's active count for a specific date (sync version)."""
+        stmt = select(cls).where(
+            (cls.created_by == user_id) & 
+            (cls.count_date == count_date) &
+            (cls.status == CountStatus.DRAFT)
+        )
+        result = db.execute(stmt)
         return result.scalar_one_or_none()
 
 class CountItem(Base):

@@ -64,3 +64,13 @@ async def get_current_manager_or_admin_user(
             detail="Not enough permissions"
         )
     return current_user
+
+async def get_current_counter_or_above_user(
+    current_user: Annotated[User, Depends(get_current_active_user)]
+) -> User:
+    if current_user.role not in ["admin", "manager", "counter"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions"
+        )
+    return current_user

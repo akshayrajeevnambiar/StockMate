@@ -36,6 +36,7 @@ class CountCreate(CountBase):
     pass
 
 class CountUpdate(BaseModel):
+    count_date: Optional[date] = None
     notes: Optional[str] = None
     rejection_reason: Optional[str] = None
 
