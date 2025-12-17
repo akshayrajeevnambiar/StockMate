@@ -5,11 +5,14 @@ interface DashboardHeaderProps {
   onCreateCount?: () => void;
 }
 
-export default function DashboardHeader({ onExport, onCreateCount }: DashboardHeaderProps) {
+export default function DashboardHeader({
+  onExport,
+  onCreateCount,
+}: DashboardHeaderProps) {
   return (
     <div className="flex items-center justify-between mb-6">
       <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-      
+
       <div className="flex items-center gap-3">
         {/* Icon Button */}
         <button
@@ -19,7 +22,7 @@ export default function DashboardHeader({ onExport, onCreateCount }: DashboardHe
         >
           <Download className="w-4 h-4 text-gray-700" />
         </button>
-        
+
         {/* Export CSV Button */}
         <button
           onClick={onExport}
@@ -27,7 +30,7 @@ export default function DashboardHeader({ onExport, onCreateCount }: DashboardHe
         >
           Export CSV
         </button>
-        
+
         {/* Record Count Button */}
         <button
           onClick={onCreateCount}

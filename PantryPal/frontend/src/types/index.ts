@@ -91,6 +91,7 @@ export interface Count {
   count_date: string;
   status: CountStatus;
   created_by: string;
+  created_by_name?: string;
   submitted_at?: string;
   reviewed_by?: string;
   reviewed_at?: string;

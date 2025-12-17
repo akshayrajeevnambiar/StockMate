@@ -1,5 +1,5 @@
 import { MoreVertical, TrendingUp, TrendingDown } from "lucide-react";
-import { ComponentType } from "react";
+import type { ComponentType } from "react";
 
 interface StatCardProps {
   icon: ComponentType<{ className?: string; strokeWidth?: number }>;
@@ -12,7 +12,13 @@ interface StatCardProps {
   onClick?: () => void;
 }
 
-export default function StatCard({ icon: Icon, label, value, trend, onClick }: StatCardProps) {
+export default function StatCard({
+  icon: Icon,
+  label,
+  value,
+  trend,
+  onClick,
+}: StatCardProps) {
   return (
     <div
       className={`bg-white border border-gray-200 rounded-xl p-5 shadow-sm ${
@@ -29,14 +35,14 @@ export default function StatCard({ icon: Icon, label, value, trend, onClick }: S
           <MoreVertical className="w-4 h-4" />
         </button>
       </div>
-      
+
       {/* Label */}
       <p className="text-sm text-gray-500 mb-1">{label}</p>
-      
+
       {/* Value and Trend */}
       <div className="flex items-end justify-between">
         <p className="text-2xl font-semibold text-gray-900">{value}</p>
-        
+
         {trend && (
           <div
             className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium ${

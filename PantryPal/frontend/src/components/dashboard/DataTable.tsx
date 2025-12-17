@@ -18,7 +18,12 @@ interface DataTableProps {
   onSort?: () => void;
 }
 
-export default function DataTable({ title, data, onSearch, onSort }: DataTableProps) {
+export default function DataTable({
+  title,
+  data,
+  onSearch,
+  onSort,
+}: DataTableProps) {
   const getStatusStyles = (status: DataRow["status"]) => {
     switch (status) {
       case "Low Stock":
@@ -39,7 +44,7 @@ export default function DataTable({ title, data, onSearch, onSort }: DataTablePr
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-        
+
         <div className="flex items-center gap-3">
           {/* Search */}
           <div className="relative">
@@ -51,7 +56,7 @@ export default function DataTable({ title, data, onSearch, onSort }: DataTablePr
               className="pl-10 pr-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
             />
           </div>
-          
+
           {/* Sort Button */}
           <button
             onClick={onSort}
@@ -62,7 +67,7 @@ export default function DataTable({ title, data, onSearch, onSort }: DataTablePr
           </button>
         </div>
       </div>
-      
+
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full">
@@ -86,9 +91,7 @@ export default function DataTable({ title, data, onSearch, onSort }: DataTablePr
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                
-              </th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -96,7 +99,9 @@ export default function DataTable({ title, data, onSearch, onSort }: DataTablePr
               <tr key={row.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div>
-                    <div className="text-sm font-medium text-gray-900">{row.item}</div>
+                    <div className="text-sm font-medium text-gray-900">
+                      {row.item}
+                    </div>
                     {row.sku && (
                       <div className="text-xs text-gray-500">{row.sku}</div>
                     )}
@@ -133,11 +138,9 @@ export default function DataTable({ title, data, onSearch, onSort }: DataTablePr
           </tbody>
         </table>
       </div>
-      
+
       {data.length === 0 && (
-        <div className="text-center py-12 text-gray-500">
-          No data available
-        </div>
+        <div className="text-center py-12 text-gray-500">No data available</div>
       )}
     </div>
   );
