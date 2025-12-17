@@ -1,184 +1,228 @@
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { UserRole } from "../types";
 import {
-  HomeIcon,
-  CubeIcon,
-  ClipboardDocumentListIcon,
-  ClockIcon,
-  ArrowRightOnRectangleIcon,
-  UserCircleIcon,
-  Bars3Icon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+  LayoutGrid,
+  Box,
+  FileText,
+  Package,
+  BarChart3,
+  Wallet,
+  Map,
+  Users,
+  BookOpen,
+  HelpCircle,
+  Headphones,
+  Search,
+  ChevronDown,
+  ChevronLeft,
+  Boxes,
+  Settings,
+  ChevronUp,
+  LogOut,
+} from "lucide-react";
 import { useState } from "react";
 
 export default function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
-  // Base navigation for all users
-  const baseNavigation = [
-    { name: "Dashboard", href: "/", icon: HomeIcon },
-    { name: "Items", href: "/items", icon: CubeIcon },
-    { name: "Counts", href: "/counts", icon: ClipboardDocumentListIcon },
+  // Navigation configuration matching Delisas reference
+  const primaryNavItems = [
+    { name: "Dashboard", href: "/", icon: LayoutGrid },
+    { name: "Counts", href: "/counts", icon: FileText },
+    { name: "Inventory", href: "/items", icon: Package },
+    { name: "Reports", href: "/reports", icon: BarChart3 },
+    { name: "Pending Requests", href: "/pending-requests", icon: Map, hasChevron: true },
+    { name: "Users", href: "/users", icon: Users },
   ];
 
-  // Additional navigation for admins and managers
-  const adminNavigation = [
-    { name: "Pending Requests", href: "/pending-requests", icon: ClockIcon },
-  ];
-
-  // Combine navigation based on user role
-  const navigation = [
-    ...baseNavigation,
-    ...(user?.role === UserRole.ADMIN || user?.role === UserRole.MANAGER
-      ? adminNavigation
-      : []),
+  const helpNavItems = [
+    { name: "Settings", href: "/settings", icon: Settings },
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-      {/* Enhanced Navigation */}
-      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-slate-200/60 shadow-lg shadow-slate-900/5">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            {/* Logo Section */}
-            <div className="flex items-center">
-              <div className="flex-shrink-0 flex items-center group cursor-pointer">
-                <div className="relative">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25 group-hover:shadow-xl group-hover:shadow-blue-500/30 transition-all duration-300 group-hover:scale-105">
-                    <CubeIcon className="w-7 h-7 text-white" />
-                  </div>
-                  <div className="absolute -inset-1 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-300 blur-sm"></div>
-                </div>
-                <div className="ml-4">
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
-                    PantryPal
-                  </h1>
-                  <p className="text-xs text-slate-500 font-medium">
-                    Inventory Management
-                  </p>
-                </div>
-              </div>
-
-              {/* Desktop Navigation */}
-              <div className="hidden lg:flex lg:ml-12 lg:space-x-2">
-                {navigation.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      className={`${
-                        isActive(item.href)
-                          ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25"
-                          : "text-slate-700 hover:text-blue-600 hover:bg-blue-50/80"
-                      } group flex items-center px-5 py-3 text-sm font-semibold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-md`}
-                    >
-                      <Icon
-                        className={`${
-                          isActive(item.href)
-                            ? "text-white"
-                            : "text-slate-500 group-hover:text-blue-600"
-                        } mr-3 h-5 w-5 transition-colors duration-300`}
-                      />
-                      {item.name}
-                    </Link>
-                  );
-                })}
+    <div className="flex h-screen bg-white overflow-hidden">
+      {/* Delisas-style Sidebar */}
+      <aside className={`hidden lg:flex lg:flex-col bg-white border-r border-gray-200 shrink-0 p-4 transition-all duration-300 ${
+        sidebarCollapsed ? "w-20" : "w-[280px]"
+      }`}>
+        {/* Top Brand Row */}
+        <div className={`flex items-center mb-4 ${sidebarCollapsed ? "justify-center" : "justify-between"}`}>
+          {!sidebarCollapsed && (
+            <div className="flex items-center space-x-2.5">
+              {/* Circular Logo */}
+              <button
+                onClick={() => sidebarCollapsed && setSidebarCollapsed(false)}
+                className="w-8 h-8 rounded-full border-2 border-gray-900 flex items-center justify-center bg-white shrink-0 cursor-default transition-colors"
+              >
+                <Boxes className="w-4 h-4 text-gray-900" />
+              </button>
+              {/* Brand Name & Subheading */}
+              <div className="flex flex-col">
+                <span className="text-lg font-semibold text-gray-900 leading-tight">PantryPal</span>
+                <span className="text-xs text-gray-500 leading-tight">Inventory Management</span>
               </div>
             </div>
+          )}
+          {sidebarCollapsed && (
+            <button
+              onClick={() => setSidebarCollapsed(false)}
+              className="w-8 h-8 rounded-full border-2 border-gray-900 flex items-center justify-center bg-white shrink-0 cursor-pointer hover:bg-gray-50 transition-colors"
+              title="Expand sidebar"
+            >
+              <Boxes className="w-4 h-4 text-gray-900" />
+            </button>
+          )}
+          {/* Collapse Button */}
+          {!sidebarCollapsed && (
+            <button
+              onClick={() => setSidebarCollapsed(true)}
+              className="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              title="Collapse sidebar"
+            >
+              <ChevronLeft className="w-4 h-4 text-gray-900" />
+            </button>
+          )}
+        </div>
 
-            {/* User Section */}
-            <div className="flex items-center space-x-4">
-              {/* User Profile */}
-              <div className="hidden md:flex items-center space-x-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-2xl px-5 py-3 border border-slate-200/60 shadow-sm">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center">
-                  <UserCircleIcon className="w-6 h-6 text-blue-600" />
-                </div>
-                <div className="text-sm">
-                  <p className="font-semibold text-slate-900">
-                    {user?.full_name}
-                  </p>
-                  <p className="text-xs text-slate-500 capitalize">
-                    {user?.role}
-                  </p>
-                </div>
-              </div>
+        {/* Search Bar */}
+        <div className={`relative mb-4 transition-opacity duration-300 ${
+          sidebarCollapsed ? "opacity-0 h-0 overflow-hidden" : "opacity-100"
+        }`}>
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search"
+            className="w-full h-10 pl-9 pr-4 bg-gray-50 border border-gray-200 rounded-[10px] text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow"
+          />
+        </div>
 
-              {/* Logout Button */}
-              <button
-                onClick={handleLogout}
-                className="inline-flex items-center px-5 py-3 text-sm font-semibold text-white bg-gradient-to-r from-red-500 via-pink-500 to-red-600 rounded-xl hover:from-red-600 hover:via-pink-600 hover:to-red-700 focus:outline-none focus:ring-4 focus:ring-red-500/20 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30"
+        {/* Primary Navigation */}
+        <nav className={`flex-1 overflow-y-auto ${sidebarCollapsed ? 'space-y-3' : 'space-y-0.5'}`}>
+          {primaryNavItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.href);
+            return (
+              <Link
+                key={item.name}
+                to={item.href}
+                title={sidebarCollapsed ? item.name : undefined}
+                className={`flex items-center h-10 rounded-[10px] text-sm transition-all duration-150 ${
+                  active
+                    ? "bg-gray-50 border border-gray-200 text-gray-900 font-semibold"
+                    : "text-gray-900 hover:bg-gray-100"
+                } ${sidebarCollapsed ? "justify-center mx-3" : "justify-between px-3"}`}
               >
-                <ArrowRightOnRectangleIcon className="w-4 h-4 mr-2" />
-                Sign Out
-              </button>
-
-              {/* Mobile menu button */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden inline-flex items-center justify-center p-3 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200"
-              >
-                {mobileMenuOpen ? (
-                  <XMarkIcon className="w-6 h-6" />
+                {sidebarCollapsed ? (
+                  <Icon className="w-[18px] h-[18px]" strokeWidth={2} />
                 ) : (
-                  <Bars3Icon className="w-6 h-6" />
+                  <>
+                    <div className="flex items-center gap-2.5">
+                      <Icon className="w-[18px] h-[18px]" strokeWidth={2} />
+                      <span>{item.name}</span>
+                    </div>
+                    {item.hasChevron && (
+                      <ChevronDown className="w-4 h-4 text-gray-600" />
+                    )}
+                  </>
                 )}
-              </button>
-            </div>
+              </Link>
+            );
+          })}
+
+          {/* Divider */}
+          <div className="my-3 border-t border-gray-200" />
+
+          {/* Help Section */}
+          {helpNavItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.href);
+            return (
+              <Link
+                key={item.name}
+                to={item.href}
+                title={sidebarCollapsed ? item.name : undefined}
+                className={`flex items-center h-10 rounded-[10px] text-sm transition-all duration-150 ${
+                  active
+                    ? "bg-gray-50 border border-gray-200 text-gray-900 font-semibold"
+                    : "text-gray-700 hover:bg-gray-100"
+                } ${sidebarCollapsed ? "justify-center mx-3" : "px-3"}`}
+              >
+                {sidebarCollapsed ? (
+                  <Icon className="w-[18px] h-[18px]" strokeWidth={2} />
+                ) : (
+                  <>
+                    <Icon className="w-[18px] h-[18px] mr-2.5" strokeWidth={2} />
+                    <span>{item.name}</span>
+                  </>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Bottom User Profile & Sign Out */}
+        <div className="mt-auto space-y-2">
+          {/* User Profile */}
+          <div className={`flex items-center bg-white border border-gray-200 rounded-xl p-3 ${
+            sidebarCollapsed ? "justify-center p-2" : ""
+          }`}>
+            {sidebarCollapsed ? (
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-sm font-semibold">
+                {user?.full_name?.charAt(0).toUpperCase() || "U"}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2.5">
+                {/* Avatar */}
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-sm font-semibold shrink-0">
+                  {user?.full_name?.charAt(0).toUpperCase() || "U"}
+                </div>
+                {/* User Info */}
+                <div className="flex flex-col text-left">
+                  <span className="text-sm font-semibold text-gray-900 leading-tight">
+                    {user?.full_name || "User"}
+                  </span>
+                  <span className="text-xs text-gray-500 capitalize leading-tight">
+                    {user?.role || "Admin"}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
+
+          {/* Sign Out Button */}
+          <button
+            onClick={handleLogout}
+            title={sidebarCollapsed ? "Sign out" : undefined}
+            className={`w-full flex items-center gap-2.5 bg-white border border-gray-200 rounded-xl hover:bg-red-50 hover:border-red-200 transition-colors ${
+              sidebarCollapsed ? "justify-center p-2" : "p-3"
+            }`}
+          >
+            <LogOut className="w-[18px] h-[18px] text-gray-700" strokeWidth={2} />
+            {!sidebarCollapsed && (
+              <span className="text-sm font-medium text-gray-700">Sign out</span>
+            )}
+          </button>
         </div>
+      </aside>
 
-        {/* Mobile Navigation */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-slate-200/60 bg-white/95 backdrop-blur-xl">
-            <div className="px-6 py-4 space-y-2">
-              {navigation.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`${
-                      isActive(item.href)
-                        ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white"
-                        : "text-slate-700 hover:text-blue-600 hover:bg-blue-50"
-                    } group flex items-center px-4 py-3 text-base font-medium rounded-xl transition-all duration-200`}
-                  >
-                    <Icon
-                      className={`${
-                        isActive(item.href)
-                          ? "text-white"
-                          : "text-slate-500 group-hover:text-blue-600"
-                      } mr-3 h-5 w-5`}
-                    />
-                    {item.name}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </nav>
-
-      {/* Main Content */}
-      <main className="relative">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8 lg:py-12">
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col overflow-hidden bg-white">
+        {/* Page Content */}
+        <main className="flex-1 overflow-auto p-6 lg:p-8">
           <Outlet />
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

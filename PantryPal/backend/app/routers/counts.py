@@ -68,7 +68,7 @@ async def get_count(
         raise HTTPException(status_code=403, detail="Not authorized to view this count")
     
     return count
-Service.get_count_by_id
+
 @router.post("/{count_id}/submit", response_model=CountRead)
 async def submit_count(
     count_id: UUID,
