@@ -23,6 +23,7 @@ from app.schemas.count import (
     CountSubmit,
     CountReview
 )
+from app.services import CountService
 
 router = APIRouter()
 
@@ -34,15 +35,7 @@ async def list_counts(
     db: Session = Depends(get_db)
 ):
     """List all counts based on user's role."""
-    query = select(Count)
-    
-    if current_user.role == "staff":
-        # Staff can only see their own counts
-        query = query.where(Count.created_by == current_user.id)
-    
-    query = query.order_by(Count.count_date.desc()).offset(skip).limit(limit)
-    result = db.execute(query)
-    return result.scalars().all()
+    return CountService.get_counts(db, current_user.id, current_user.role, skip, limit)
 
 @router.post("/", response_model=CountRead)
 async def create_count(
@@ -52,21 +45,13 @@ async def create_count(
 ):
     """Create a new count."""
     # Check if user already has an active count for this date
-    existing_count = Count.get_user_active_count_sync(db, current_user.id, count.count_date)
-    if existing_count:
+    if CountService.check_active_count_exists(db, current_user.id, count.count_date):
         raise HTTPException(
             status_code=400,
             detail="You already have an active count for this date"
         )
 
-    db_count = Count(
-        **count.model_dump(),
-        created_by=current_user.id
-    )
-    db.add(db_count)
-    db.commit()
-    db.refresh(db_count)
-    return db_count
+    return CountService.create_count(db, count, current_user.id)
 
 @router.get("/{count_id}", response_model=CountRead)
 async def get_count(
@@ -83,7 +68,7 @@ async def get_count(
         raise HTTPException(status_code=403, detail="Not authorized to view this count")
     
     return count
-
+Service.get_count_by_id
 @router.post("/{count_id}/submit", response_model=CountRead)
 async def submit_count(
     count_id: UUID,
@@ -261,10 +246,7 @@ async def list_pending_counts(
     db: Session = Depends(get_db)
 ):
     """List all counts pending review (for counters and managers)."""
-    query = select(Count).where(Count.status == CountStatus.SUBMITTED)
-    query = query.order_by(Count.submitted_at.desc()).offset(skip).limit(limit)
-    result = db.execute(query)
-    return result.scalars().all()
+    return CountService.get_pending_counts(db)
 
 @router.get("/drafts", response_model=List[CountRead])
 async def list_draft_counts(

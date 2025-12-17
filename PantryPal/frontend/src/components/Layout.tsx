@@ -1,9 +1,11 @@
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { UserRole } from "../types";
 import {
   HomeIcon,
   CubeIcon,
   ClipboardDocumentListIcon,
+  ClockIcon,
   ArrowRightOnRectangleIcon,
   UserCircleIcon,
   Bars3Icon,
@@ -22,10 +24,24 @@ export default function Layout() {
     navigate("/login");
   };
 
-  const navigation = [
+  // Base navigation for all users
+  const baseNavigation = [
     { name: "Dashboard", href: "/", icon: HomeIcon },
     { name: "Items", href: "/items", icon: CubeIcon },
     { name: "Counts", href: "/counts", icon: ClipboardDocumentListIcon },
+  ];
+
+  // Additional navigation for admins and managers
+  const adminNavigation = [
+    { name: "Pending Requests", href: "/pending-requests", icon: ClockIcon },
+  ];
+
+  // Combine navigation based on user role
+  const navigation = [
+    ...baseNavigation,
+    ...(user?.role === UserRole.ADMIN || user?.role === UserRole.MANAGER
+      ? adminNavigation
+      : []),
   ];
 
   const isActive = (path: string) => location.pathname === path;

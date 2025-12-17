@@ -23,6 +23,7 @@ import {
   formatCountDate,
   calculateTotalDiscrepancy,
 } from "../services/counts";
+import { useToast } from "../components/ToastProvider";
 import type { Count } from "../types";
 import { CountStatus } from "../types";
 
@@ -30,6 +31,9 @@ export default function CountsPage() {
   const [selectedCount, setSelectedCount] = useState<Count | null>(null);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState<string | null>(
+    null
+  );
 
   const { data: counts = [], isLoading, error } = useCounts();
   const { data: stats } = useCountStats();
@@ -37,45 +41,198 @@ export default function CountsPage() {
   const submitCount = useSubmitCount();
   const approveCount = useApproveCount();
   const rejectCount = useRejectCount();
+  const { addToast } = useToast();
 
   const handleSubmitCount = async (id: string) => {
+    const count = counts.find((c) => c.id === id);
+    const countName = count ? `Count #${count.id.slice(-8)}` : "Count";
+
     try {
+      addToast(
+        "info",
+        "Submitting Count",
+        `${countName} is being submitted for review...`,
+        3000
+      );
       await submitCount.mutateAsync(id);
-    } catch (error) {
+      addToast(
+        "success",
+        "Count Submitted",
+        `${countName} has been successfully submitted for review.`
+      );
+    } catch (error: any) {
       console.error("Failed to submit count:", error);
+
+      // Provide specific error messages
+      if (error?.response?.status === 403) {
+        addToast(
+          "error",
+          "Access Denied",
+          "You do not have permission to submit counts."
+        );
+      } else if (error?.response?.status === 404) {
+        addToast(
+          "error",
+          "Count Not Found",
+          "The count you are trying to submit no longer exists."
+        );
+      } else if (error?.response?.status === 400) {
+        addToast(
+          "error",
+          "Invalid Count",
+          "This count cannot be submitted. Please check its status."
+        );
+      } else if (error?.message?.includes("Network Error")) {
+        addToast(
+          "error",
+          "Network Error",
+          "Unable to connect to the server. Please try again."
+        );
+      } else {
+        addToast(
+          "error",
+          "Submit Failed",
+          `Failed to submit ${countName}. Please try again.`
+        );
+      }
     }
   };
 
   const handleApproveCount = async (id: string) => {
+    const count = counts.find((c) => c.id === id);
+    const countName = count ? `Count #${count.id.slice(-8)}` : "Count";
+
     try {
+      addToast(
+        "info",
+        "Approving Count",
+        `${countName} is being approved...`,
+        3000
+      );
       await approveCount.mutateAsync(id);
-    } catch (error) {
+      addToast(
+        "success",
+        "Count Approved",
+        `${countName} has been successfully approved.`
+      );
+    } catch (error: any) {
       console.error("Failed to approve count:", error);
+
+      if (error?.response?.status === 403) {
+        addToast(
+          "error",
+          "Access Denied",
+          "You do not have permission to approve counts."
+        );
+      } else if (error?.response?.status === 404) {
+        addToast(
+          "error",
+          "Count Not Found",
+          "The count you are trying to approve no longer exists."
+        );
+      } else {
+        addToast(
+          "error",
+          "Approval Failed",
+          `Failed to approve ${countName}. Please try again.`
+        );
+      }
     }
   };
 
   const handleRejectCount = async () => {
     if (!selectedCount || !rejectReason.trim()) return;
 
+    const countName = `Count #${selectedCount.id.slice(-8)}`;
+
     try {
+      addToast(
+        "info",
+        "Rejecting Count",
+        `${countName} is being rejected...`,
+        3000
+      );
       await rejectCount.mutateAsync({
         id: selectedCount.id,
         reason: rejectReason,
       });
+      addToast(
+        "success",
+        "Count Rejected",
+        `${countName} has been rejected with reason provided.`
+      );
       setShowRejectModal(false);
       setSelectedCount(null);
       setRejectReason("");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to reject count:", error);
+
+      if (error?.response?.status === 403) {
+        addToast(
+          "error",
+          "Access Denied",
+          "You do not have permission to reject counts."
+        );
+      } else if (error?.response?.status === 404) {
+        addToast(
+          "error",
+          "Count Not Found",
+          "The count you are trying to reject no longer exists."
+        );
+      } else {
+        addToast(
+          "error",
+          "Rejection Failed",
+          `Failed to reject ${countName}. Please try again.`
+        );
+      }
     }
   };
 
   const handleDeleteCount = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this count?")) {
+    const count = counts.find((c) => c.id === id);
+    const countName = count ? `Count #${count.id.slice(-8)}` : "Count";
+
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${countName}? This action cannot be undone.`
+      )
+    ) {
       try {
+        addToast(
+          "info",
+          "Deleting Count",
+          `${countName} is being deleted...`,
+          3000
+        );
         await deleteCount.mutateAsync(id);
-      } catch (error) {
+        addToast(
+          "success",
+          "Count Deleted",
+          `${countName} has been successfully deleted.`
+        );
+      } catch (error: any) {
         console.error("Failed to delete count:", error);
+
+        if (error?.response?.status === 403) {
+          addToast(
+            "error",
+            "Access Denied",
+            "You do not have permission to delete counts."
+          );
+        } else if (error?.response?.status === 404) {
+          addToast(
+            "error",
+            "Count Not Found",
+            "The count you are trying to delete no longer exists."
+          );
+        } else {
+          addToast(
+            "error",
+            "Delete Failed",
+            `Failed to delete ${countName}. Please try again.`
+          );
+        }
       }
     }
   };
@@ -342,16 +499,36 @@ export default function CountsPage() {
                           <button
                             onClick={() => handleSubmitCount(count.id)}
                             disabled={submitCount.isPending}
-                            className="rounded-lg bg-green-100 px-3 py-2 text-sm font-medium text-green-700 transition-colors hover:bg-green-200 disabled:opacity-50"
+                            className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-green-500/25 transition-all hover:from-green-700 hover:to-emerald-700 hover:shadow-xl hover:shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-lg"
                           >
-                            Submit
+                            {submitCount.isPending ? (
+                              <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                Submitting...
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircleIcon className="h-4 w-4" />
+                                Submit for Review
+                              </>
+                            )}
                           </button>
                           <button
                             onClick={() => handleDeleteCount(count.id)}
                             disabled={deleteCount.isPending}
-                            className="rounded-lg bg-red-100 px-3 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-200 disabled:opacity-50"
+                            className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-red-600 to-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-red-500/25 transition-all hover:from-red-700 hover:to-rose-700 hover:shadow-xl hover:shadow-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            Delete
+                            {deleteCount.isPending ? (
+                              <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                Deleting...
+                              </>
+                            ) : (
+                              <>
+                                <XCircleIcon className="h-4 w-4" />
+                                Delete
+                              </>
+                            )}
                           </button>
                         </>
                       )}
@@ -361,9 +538,19 @@ export default function CountsPage() {
                           <button
                             onClick={() => handleApproveCount(count.id)}
                             disabled={approveCount.isPending}
-                            className="rounded-lg bg-green-100 px-3 py-2 text-sm font-medium text-green-700 transition-colors hover:bg-green-200 disabled:opacity-50"
+                            className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-green-500/25 transition-all hover:from-green-700 hover:to-emerald-700 hover:shadow-xl hover:shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            Approve
+                            {approveCount.isPending ? (
+                              <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                Approving...
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircleIcon className="h-4 w-4" />
+                                Approve
+                              </>
+                            )}
                           </button>
                           <button
                             onClick={() => {
@@ -371,8 +558,9 @@ export default function CountsPage() {
                               setShowRejectModal(true);
                             }}
                             disabled={rejectCount.isPending}
-                            className="rounded-lg bg-red-100 px-3 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-200 disabled:opacity-50"
+                            className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-red-600 to-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-red-500/25 transition-all hover:from-red-700 hover:to-rose-700 hover:shadow-xl hover:shadow-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
+                            <XCircleIcon className="h-4 w-4" />
                             Reject
                           </button>
                         </>
