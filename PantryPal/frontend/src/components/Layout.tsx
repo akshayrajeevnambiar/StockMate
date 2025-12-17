@@ -53,58 +53,30 @@ export default function Layout() {
   return (
     <div className="flex h-screen bg-white overflow-hidden">
       {/* Delisas-style Sidebar */}
-      <aside className={`hidden lg:flex lg:flex-col bg-white border-r border-gray-200 shrink-0 p-4 transition-all duration-300 ${
-        sidebarCollapsed ? "w-20" : "w-[280px]"
+      <aside className={`hidden lg:flex lg:flex-col bg-white border-r border-gray-200 shrink-0 p-4 transition-[width] duration-300 ease-in-out will-change-[width] ${
+        sidebarCollapsed ? "w-24" : "w-[280px]"
       }`}>
         {/* Top Brand Row */}
-        <div className={`flex items-center mb-4 ${sidebarCollapsed ? "justify-center" : "justify-between"}`}>
-          {!sidebarCollapsed && (
-            <div className="flex items-center space-x-2.5">
-              {/* Circular Logo */}
-              <button
-                onClick={() => sidebarCollapsed && setSidebarCollapsed(false)}
-                className="w-8 h-8 rounded-full border-2 border-gray-900 flex items-center justify-center bg-white shrink-0 cursor-default transition-colors"
-              >
-                <Boxes className="w-4 h-4 text-gray-900" />
-              </button>
-              {/* Brand Name & Subheading */}
-              <div className="flex flex-col">
-                <span className="text-lg font-semibold text-gray-900 leading-tight">PantryPal</span>
-                <span className="text-xs text-gray-500 leading-tight">Inventory Management</span>
-              </div>
-            </div>
-          )}
-          {sidebarCollapsed && (
+        <div className={`mb-4 h-8 ${sidebarCollapsed ? 'mx-3 flex justify-center' : 'flex items-center'}`}>
+          <div className={`flex items-center space-x-2.5 min-w-0 ${sidebarCollapsed ? '' : ''}`}>
+            {/* Circular Logo */}
             <button
-              onClick={() => setSidebarCollapsed(false)}
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
               className="w-8 h-8 rounded-full border-2 border-gray-900 flex items-center justify-center bg-white shrink-0 cursor-pointer hover:bg-gray-50 transition-colors"
-              title="Expand sidebar"
+              title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
-              <Boxes className="w-4 h-4 text-gray-900" />
+              {sidebarCollapsed ? (
+                <Boxes className="w-4 h-4 text-gray-900" />
+              ) : (
+                <ChevronLeft className="w-4 h-4 text-gray-900" />
+              )}
             </button>
-          )}
-          {/* Collapse Button */}
-          {!sidebarCollapsed && (
-            <button
-              onClick={() => setSidebarCollapsed(true)}
-              className="w-8 h-8 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-              title="Collapse sidebar"
-            >
-              <ChevronLeft className="w-4 h-4 text-gray-900" />
-            </button>
-          )}
-        </div>
-
-        {/* Search Bar */}
-        <div className={`relative mb-4 transition-opacity duration-300 ${
-          sidebarCollapsed ? "opacity-0 h-0 overflow-hidden" : "opacity-100"
-        }`}>
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search"
-            className="w-full h-10 pl-9 pr-4 bg-gray-50 border border-gray-200 rounded-[10px] text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 transition-shadow"
-          />
+            {/* Brand Name & Subheading */}
+            <div className={`flex flex-col transition-opacity duration-300 ${sidebarCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}`}>
+              <span className="text-lg font-semibold text-gray-900 leading-tight whitespace-nowrap">PantryPal</span>
+              <span className="text-xs text-gray-500 leading-tight whitespace-nowrap">Inventory Management</span>
+            </div>
+          </div>
         </div>
 
         {/* Primary Navigation */}
@@ -117,7 +89,7 @@ export default function Layout() {
                 key={item.name}
                 to={item.href}
                 title={sidebarCollapsed ? item.name : undefined}
-                className={`flex items-center h-10 rounded-[10px] text-sm transition-all duration-150 ${
+                className={`flex items-center h-10 rounded-[10px] text-sm ${
                   active
                     ? "bg-gray-50 border border-gray-200 text-gray-900 font-semibold"
                     : "text-gray-900 hover:bg-gray-100"
@@ -152,7 +124,7 @@ export default function Layout() {
                 key={item.name}
                 to={item.href}
                 title={sidebarCollapsed ? item.name : undefined}
-                className={`flex items-center h-10 rounded-[10px] text-sm transition-all duration-150 ${
+                className={`flex items-center h-10 rounded-[10px] text-sm ${
                   active
                     ? "bg-gray-50 border border-gray-200 text-gray-900 font-semibold"
                     : "text-gray-700 hover:bg-gray-100"
@@ -172,16 +144,27 @@ export default function Layout() {
         </nav>
 
         {/* Bottom User Profile & Sign Out */}
-        <div className="mt-auto space-y-2">
-          {/* User Profile */}
-          <div className={`flex items-center bg-white border border-gray-200 rounded-xl p-3 ${
-            sidebarCollapsed ? "justify-center p-2" : ""
-          }`}>
-            {sidebarCollapsed ? (
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-sm font-semibold">
-                {user?.full_name?.charAt(0).toUpperCase() || "U"}
+        <div className={`mt-auto ${sidebarCollapsed ? "space-y-2" : ""}`}>
+          {sidebarCollapsed ? (
+            <>
+              {/* User Profile - Collapsed */}
+              <div className="flex items-center justify-center transition-opacity duration-300">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-sm font-semibold border-2 border-white shadow-sm transition-all duration-300 ease-in-out">
+                  {user?.full_name?.charAt(0).toUpperCase() || "U"}
+                </div>
               </div>
-            ) : (
+              {/* Sign Out Button - Collapsed */}
+              <button
+                onClick={handleLogout}
+                className="w-10 h-10 mx-auto flex items-center justify-center bg-white border-2 border-gray-200 rounded-full hover:bg-red-50 hover:border-red-200 transition-all duration-300 ease-in-out group shadow-sm"
+                title="Sign out"
+              >
+                <LogOut className="w-[18px] h-[18px] text-gray-700 group-hover:text-red-600 transition-colors duration-300" strokeWidth={2} />
+              </button>
+            </>
+          ) : (
+            /* User Profile with Sign Out - Expanded */
+            <div className="flex items-center justify-between bg-white border border-gray-200 rounded-xl p-3 transition-all duration-300 ease-in-out">
               <div className="flex items-center gap-2.5">
                 {/* Avatar */}
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-sm font-semibold shrink-0">
@@ -197,22 +180,16 @@ export default function Layout() {
                   </span>
                 </div>
               </div>
-            )}
-          </div>
-
-          {/* Sign Out Button */}
-          <button
-            onClick={handleLogout}
-            title={sidebarCollapsed ? "Sign out" : undefined}
-            className={`w-full flex items-center gap-2.5 bg-white border border-gray-200 rounded-xl hover:bg-red-50 hover:border-red-200 transition-colors ${
-              sidebarCollapsed ? "justify-center p-2" : "p-3"
-            }`}
-          >
-            <LogOut className="w-[18px] h-[18px] text-gray-700" strokeWidth={2} />
-            {!sidebarCollapsed && (
-              <span className="text-sm font-medium text-gray-700">Sign out</span>
-            )}
-          </button>
+              {/* Sign Out Button */}
+              <button
+                onClick={handleLogout}
+                className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-100 transition-colors group"
+                title="Sign out"
+              >
+                <LogOut className="w-4 h-4 text-gray-700 group-hover:text-red-600" strokeWidth={2} />
+              </button>
+            </div>
+          )}
         </div>
       </aside>
 
