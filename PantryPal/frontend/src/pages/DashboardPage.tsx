@@ -100,7 +100,6 @@ export default function DashboardPage() {
   const tableData = lowStockItems.map((item) => ({
     id: item.id,
     item: item.name,
-    sku: item.sku || undefined,
     category: item.category || "Uncategorized",
     lastUpdated: new Date(item.updated_at || Date.now()).toLocaleDateString(),
     countedBy: user?.full_name || "System",
