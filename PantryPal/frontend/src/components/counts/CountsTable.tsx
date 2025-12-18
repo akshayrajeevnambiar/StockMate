@@ -46,11 +46,16 @@ export function CountsTable({ counts, onAction }: CountsTableProps) {
                 <div className="font-medium text-gray-900">
                   #CT-{shortId(count.id)}
                 </div>
-                <div className="text-xs text-gray-400">{count.count_date?.slice(0, 10)}</div>
+                <div className="text-xs text-gray-400">
+                  {count.count_date?.slice(0, 10)}
+                </div>
               </td>
               <td className="px-4 py-3 whitespace-nowrap">
                 <div className="flex items-center gap-2">
-                  <Avatar name={count.created_by_name || count.created_by} size={24} />
+                  <Avatar
+                    name={count.created_by_name || count.created_by}
+                    size={24}
+                  />
                   <span className="text-gray-900 text-sm">
                     {count.created_by_name || count.created_by}
                   </span>

@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCounts, useCountStats, useDeleteCount, useSubmitCount, useApproveCount, useRejectCount } from "../services/counts";
+import {
+  useCounts,
+  useCountStats,
+  useDeleteCount,
+  useSubmitCount,
+  useApproveCount,
+  useRejectCount,
+} from "../services/counts";
 import { useToast } from "../components/ToastProvider";
 import type { Count } from "../types";
 import { CountStatus } from "../types";
@@ -289,22 +296,38 @@ export default function CountsPage() {
         {stats && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatCard
-              icon={() => <span className="w-8 h-8 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center"><span className="text-gray-900 font-bold">Σ</span></span>}
+              icon={() => (
+                <span className="w-8 h-8 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center">
+                  <span className="text-gray-900 font-bold">Σ</span>
+                </span>
+              )}
               label="Total Counts"
               value={stats.total_counts}
             />
             <StatCard
-              icon={() => <span className="w-8 h-8 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center"><span className="text-gray-900 font-bold">D</span></span>}
+              icon={() => (
+                <span className="w-8 h-8 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center">
+                  <span className="text-gray-900 font-bold">D</span>
+                </span>
+              )}
               label="Draft Counts"
               value={stats.draft_counts ?? 0}
             />
             <StatCard
-              icon={() => <span className="w-8 h-8 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center"><span className="text-gray-900 font-bold">P</span></span>}
+              icon={() => (
+                <span className="w-8 h-8 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center">
+                  <span className="text-gray-900 font-bold">P</span>
+                </span>
+              )}
               label="Pending Review"
               value={stats.pending_counts}
             />
             <StatCard
-              icon={() => <span className="w-8 h-8 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center"><span className="text-gray-900 font-bold">A</span></span>}
+              icon={() => (
+                <span className="w-8 h-8 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center">
+                  <span className="text-gray-900 font-bold">A</span>
+                </span>
+              )}
               label="Approved Counts"
               value={stats.approved_counts}
             />
@@ -314,8 +337,12 @@ export default function CountsPage() {
         <Card className="p-0">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-gray-200 px-6 py-4">
             <div>
-              <h3 className="text-xl font-semibold text-gray-900">Recent Counts</h3>
-              <p className="text-sm text-gray-500">Latest inventory counts across your team</p>
+              <h3 className="text-xl font-semibold text-gray-900">
+                Recent Counts
+              </h3>
+              <p className="text-sm text-gray-500">
+                Latest inventory counts across your team
+              </p>
             </div>
             <CountsFilters
               search={search}
@@ -333,17 +360,24 @@ export default function CountsPage() {
               <div className="h-12 bg-gray-100/40 rounded-lg animate-pulse mb-4" />
               <div className="space-y-2">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="h-10 bg-gray-100/30 rounded-lg animate-pulse" />
+                  <div
+                    key={i}
+                    className="h-10 bg-gray-100/30 rounded-lg animate-pulse"
+                  />
                 ))}
               </div>
             </div>
           ) : counts.length === 0 ? (
-            <CountsEmptyState onNewCount={() => navigate("/counts/new")}/>
+            <CountsEmptyState onNewCount={() => navigate("/counts/new")} />
           ) : (
             <CountsTable
               counts={counts.filter(
                 (c) =>
-                  (!search || c.id.includes(search) || c.created_by.toLowerCase().includes(search.toLowerCase())) &&
+                  (!search ||
+                    c.id.includes(search) ||
+                    c.created_by
+                      .toLowerCase()
+                      .includes(search.toLowerCase())) &&
                   (!status || c.status === status)
               )}
               onAction={(action, count) => {

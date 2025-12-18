@@ -1,4 +1,5 @@
 from typing import List
+from fastapi.encoders import jsonable_encoder
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -34,8 +35,10 @@ async def list_counts(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
-    """List all counts based on user's role."""
-    return CountService.get_counts(db, current_user.id, current_user.role, skip, limit)
+    """List all counts based on user's role, including creator's name."""
+    counts = CountService.get_counts(db, current_user.id, current_user.role, skip, limit)
+    # Convert dicts to CountRead models
+    return [CountRead(**jsonable_encoder(c)) for c in counts]
 
 @router.post("/", response_model=CountRead)
 async def create_count(

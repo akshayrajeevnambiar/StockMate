@@ -44,6 +44,7 @@ class CountRead(CountBase):
     id: UUID
     status: CountStatus
     created_by: UUID
+    created_by_name: Optional[str] = None
     submitted_at: Optional[datetime]
     reviewed_by: Optional[UUID]
     reviewed_at: Optional[datetime]

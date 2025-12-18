@@ -19,17 +19,23 @@ class CountService:
         user_role: str,
         skip: int = 0,
         limit: int = 10
-    ) -> List[Count]:
-        """Get list of counts based on user role."""
-        query = select(Count)
-        
+    ) -> list:
+        """Get list of counts based on user role, including creator's full_name."""
+        from app.models.user import User
+        query = select(Count, User.full_name).join(User, Count.created_by == User.id)
         if user_role == "staff":
             # Staff can only see their own counts
             query = query.where(Count.created_by == user_id)
-        
         query = query.order_by(Count.count_date.desc()).offset(skip).limit(limit)
         result = db.execute(query)
-        return result.scalars().all()
+        counts = []
+        for count, full_name in result.all():
+            count_dict = count.__dict__.copy()
+            count_dict["created_by_name"] = full_name
+            # Add count_items as a list of dicts for Pydantic
+            count_dict["count_items"] = [item.__dict__ for item in getattr(count, "count_items", [])]
+            counts.append(count_dict)
+        return counts
     
     @staticmethod
     def get_count_by_id(db: Session, count_id: UUID) -> Optional[Count]:
