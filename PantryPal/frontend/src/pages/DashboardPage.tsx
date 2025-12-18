@@ -19,7 +19,12 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { DashboardHeader, StatCard, ChartCard, DataTable } from "../components/dashboard";
+import {
+  DashboardHeader,
+  StatCard,
+  ChartCard,
+  DataTable,
+} from "../components/dashboard";
 
 interface DashboardStats {
   total_items: number;
@@ -85,12 +90,12 @@ export default function DashboardPage() {
   // Calculate last count time
   const getLastCountLabel = () => {
     if (!stats?.recent_counts?.[0]?.date) return "Never";
-    
+
     const lastCount = new Date(stats.recent_counts[0].date);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - lastCount.getTime());
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) return "Today";
     if (diffDays === 1) return "Yesterday";
     return `${diffDays} days ago`;
@@ -103,14 +108,18 @@ export default function DashboardPage() {
     category: item.category || "Uncategorized",
     lastUpdated: new Date(item.updated_at || Date.now()).toLocaleDateString(),
     countedBy: user?.full_name || "System",
-    variance: item.current_quantity && item.par_level
-      ? `${Math.round(((item.current_quantity - item.par_level) / item.par_level) * 100)}%`
-      : undefined,
-    status: (item.current_quantity || 0) < (item.par_level || 0) * 0.3
-      ? "Low Stock" as const
-      : (item.current_quantity || 0) < (item.par_level || 0) * 0.5
-      ? "Needs Review" as const
-      : "OK" as const,
+    variance:
+      item.current_quantity && item.par_level
+        ? `${Math.round(
+            ((item.current_quantity - item.par_level) / item.par_level) * 100
+          )}%`
+        : undefined,
+    status:
+      (item.current_quantity || 0) < (item.par_level || 0) * 0.3
+        ? ("Low Stock" as const)
+        : (item.current_quantity || 0) < (item.par_level || 0) * 0.5
+        ? ("Needs Review" as const)
+        : ("OK" as const),
   }));
 
   if (statsLoading) {
@@ -208,7 +217,9 @@ export default function DashboardPage() {
             {categoryData.map((cat, index) => (
               <div key={index}>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">{cat.category}</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    {cat.category}
+                  </span>
                   <span className="text-sm font-semibold text-gray-900">
                     ${cat.value.toLocaleString()}
                   </span>

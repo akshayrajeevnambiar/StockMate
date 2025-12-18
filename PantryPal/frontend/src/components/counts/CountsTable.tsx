@@ -1,4 +1,4 @@
-import { MoreVertical } from "lucide-react";
+import { Check, X } from "lucide-react";
 
 import { StatusPill } from "../ui/StatusPill";
 import { Avatar } from "../ui/Avatar";
@@ -70,13 +70,22 @@ export function CountsTable({ counts, onAction }: CountsTableProps) {
               <td className="px-4 py-3">
                 <StatusPill status={count.status} />
               </td>
-              <td className="px-4 py-3 text-right">
+              <td className="px-4 py-3 text-right flex gap-2 justify-end">
                 <button
-                  className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors"
-                  onClick={() => onAction("menu", count)}
-                  title="Actions"
+                  className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 bg-white hover:bg-green-50 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
+                  onClick={() => onAction("approve", count)}
+                  title="Approve"
+                  aria-label="Approve"
                 >
-                  <MoreVertical className="w-4 h-4 text-gray-700" />
+                  <Check className="w-4 h-4 text-green-600" />
+                </button>
+                <button
+                  className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 bg-white hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500"
+                  onClick={() => onAction("reject", count)}
+                  title="Reject"
+                  aria-label="Reject"
+                >
+                  <X className="w-4 h-4 text-red-600" />
                 </button>
               </td>
             </tr>

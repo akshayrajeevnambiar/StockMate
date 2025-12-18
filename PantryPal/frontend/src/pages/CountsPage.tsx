@@ -39,17 +39,21 @@ export default function CountsPage() {
             {isAuthError && (
               <div className="mt-4 space-y-2">
                 <p className="text-xs text-gray-400">
-                  This might be because the backend count endpoints are not implemented yet.
+                  This might be because the backend count endpoints are not
+                  implemented yet.
                 </p>
                 <button
                   onClick={() => {
                     console.log(
                       "API Base URL:",
-                      import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api"
+                      import.meta.env.VITE_API_BASE_URL ||
+                        "http://localhost:8000/api"
                     );
                     console.log(
                       "Access Token:",
-                      localStorage.getItem("access_token") ? "Present" : "Missing"
+                      localStorage.getItem("access_token")
+                        ? "Present"
+                        : "Missing"
                     );
                     console.log("Error details:", error);
                   }}
